@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Page flip keyframes ── */
+@keyframes flipForwardOut {
+  0%   { transform: perspective(1400px) rotateY(0deg);   }
+  100% { transform: perspective(1400px) rotateY(-90deg); }
+}
+@keyframes flipForwardIn {
+  0%   { transform: perspective(1400px) rotateY(90deg);  }
+  100% { transform: perspective(1400px) rotateY(0deg);   }
+}
+@keyframes flipBackwardOut {
+  0%   { transform: perspective(1400px) rotateY(0deg);  }
+  100% { transform: perspective(1400px) rotateY(90deg); }
+}
+@keyframes flipBackwardIn {
+  0%   { transform: perspective(1400px) rotateY(-90deg); }
+  100% { transform: perspective(1400px) rotateY(0deg);   }
+}
+
+.flip-forward-out  { animation: flipForwardOut  0.35s ease-in  forwards; }
+.flip-forward-in   { animation: flipForwardIn   0.35s ease-out forwards; }
+.flip-backward-out { animation: flipBackwardOut 0.35s ease-in  forwards; }
+.flip-backward-in  { animation: flipBackwardIn  0.35s ease-out forwards; }
+
+/* Subtle left-side spine gradient on resume pages */
+.page-spine::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 28px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.07), transparent);
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 2px 0 0 2px;
+}
+
+/* Thin scrollbar for overflow areas */
+.resume-scroll::-webkit-scrollbar { width: 3px; }
+.resume-scroll::-webkit-scrollbar-track { background: transparent; }
+.resume-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 2px; }
