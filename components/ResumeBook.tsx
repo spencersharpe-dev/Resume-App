@@ -6,7 +6,7 @@ import { useState } from "react";
 type FlipDir = "forward" | "backward";
 type Phase = "idle" | "flipping";
 
-// ── Small helper components ────────────────────────────────────────────────
+// ── Helper components ──────────────────────────────────────────────────────
 
 function SectionHeader({ title }: { title: string }) {
   return (
@@ -63,12 +63,97 @@ function JobEntry({
   );
 }
 
-// ── Page 1 ─────────────────────────────────────────────────────────────────
+// ── Cover Page ─────────────────────────────────────────────────────────────
+
+function CoverPage() {
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d1321] rounded-[3px] overflow-hidden">
+      {/* Background texture: very subtle diagonal lines */}
+      <div
+        className="absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(45deg, #f59e0b 0px, #f59e0b 1px, transparent 1px, transparent 10px)",
+        }}
+      />
+
+      {/* Outer decorative border */}
+      <div className="absolute inset-5 border border-amber-600/25 rounded-[2px] pointer-events-none" />
+      {/* Inner decorative border */}
+      <div className="absolute inset-8 border border-amber-500/12 rounded-[2px] pointer-events-none" />
+
+      {/* Corner ornaments */}
+      {[
+        "top-5 left-5",
+        "top-5 right-5 rotate-90",
+        "bottom-5 right-5 rotate-180",
+        "bottom-5 left-5 -rotate-90",
+      ].map((pos, i) => (
+        <svg
+          key={i}
+          className={`absolute ${pos} w-5 h-5 text-amber-600/40`}
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path d="M0 0 L8 0 L8 1 L1 1 L1 8 L0 8 Z" />
+        </svg>
+      ))}
+
+      {/* Main content */}
+      <div className="relative text-center px-16 z-10">
+        {/* Top ornamental divider */}
+        <div className="flex items-center justify-center gap-3 mb-10">
+          <div className="h-px w-20 bg-gradient-to-r from-transparent to-amber-500/60" />
+          <svg className="w-4 h-4 text-amber-400/80 flex-shrink-0" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 1l1.5 4.5H15l-4.25 3.1 1.6 4.9L8 10.8l-4.35 2.7 1.6-4.9L1 5.5h5.5Z" />
+          </svg>
+          <div className="h-px w-20 bg-gradient-to-l from-transparent to-amber-500/60" />
+        </div>
+
+        {/* Subtitle */}
+        <p className="text-amber-400/60 text-[10px] tracking-[0.4em] uppercase mb-6 font-light">
+          The Work History of
+        </p>
+
+        {/* Name */}
+        <h1 className="font-serif font-bold leading-none mb-2">
+          <span className="block text-6xl text-white tracking-tight">Spencer</span>
+          <span className="block text-6xl bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-300 bg-clip-text text-transparent tracking-tight mt-1">
+            Sharpe
+          </span>
+        </h1>
+
+        {/* Bottom ornamental divider */}
+        <div className="flex items-center justify-center gap-3 mt-10">
+          <div className="h-px w-20 bg-gradient-to-r from-transparent to-amber-500/60" />
+          <svg className="w-4 h-4 text-amber-400/80 flex-shrink-0" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 1l1.5 4.5H15l-4.25 3.1 1.6 4.9L8 10.8l-4.35 2.7 1.6-4.9L1 5.5h5.5Z" />
+          </svg>
+          <div className="h-px w-20 bg-gradient-to-l from-transparent to-amber-500/60" />
+        </div>
+
+        {/* Roles */}
+        <p className="text-amber-500/40 text-[10px] tracking-[0.25em] uppercase mt-6 font-light">
+          Talent Engineer &nbsp;·&nbsp; Senior QA Engineer
+        </p>
+      </div>
+
+      {/* Bottom CTA */}
+      <div className="absolute bottom-10 flex items-center gap-2 text-amber-400/30">
+        <span className="text-[9px] tracking-[0.3em] uppercase">Turn the page to begin</span>
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+// ── Resume Page 1 ──────────────────────────────────────────────────────────
 
 function ResumePage1() {
   return (
     <div className="px-9 pt-8 pb-6 font-sans h-full">
-      {/* Name & contact header */}
       <div className="mb-4">
         <h1 className="font-serif text-[28px] font-bold text-slate-900 tracking-tight leading-none">
           Spencer Sharpe
@@ -123,12 +208,11 @@ function ResumePage1() {
   );
 }
 
-// ── Page 2 ─────────────────────────────────────────────────────────────────
+// ── Resume Page 2 ──────────────────────────────────────────────────────────
 
 function ResumePage2() {
   return (
     <div className="px-9 pt-8 pb-6 font-sans h-full">
-      {/* Continuation header */}
       <div className="mb-4">
         <div className="flex items-baseline justify-between">
           <h1 className="font-serif text-[18px] font-bold text-slate-400 tracking-tight">
@@ -164,15 +248,11 @@ function ResumePage2() {
       <SectionHeader title="Education" />
       <div className="mb-4 space-y-1.5">
         <div className="flex justify-between items-center">
-          <span className="text-[11px] text-slate-700 font-medium">
-            Irvine Valley College, Irvine CA
-          </span>
+          <span className="text-[11px] text-slate-700 font-medium">Irvine Valley College, Irvine CA</span>
           <span className="text-[10px] text-slate-400">Aug 2013 — Jun 2015</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-[11px] text-slate-700 font-medium">
-            Northwood High School, Irvine CA
-          </span>
+          <span className="text-[11px] text-slate-700 font-medium">Northwood High School, Irvine CA</span>
           <span className="text-[10px] text-slate-400">Sep 2009 — Jun 2013</span>
         </div>
       </div>
@@ -186,9 +266,8 @@ function ResumePage2() {
           <span className="text-[10px] text-slate-400">June 2020 — Jan 2021</span>
         </div>
         <p className="text-[10.5px] text-slate-500 leading-snug mt-1">
-          Independently building full-stack websites and apps from the ground up,
-          taking projects from concept to deployment using Claude, ChatGPT, Figma,
-          VSCode, GitHub, Xcode, Playwright, and Supabase.
+          Independently building full-stack websites and apps from concept to deployment using
+          Claude, ChatGPT, Figma, VSCode, GitHub, Xcode, Playwright, and Supabase.
         </p>
       </div>
 
@@ -211,20 +290,33 @@ function ResumePage2() {
   );
 }
 
-// ── Page content helper ────────────────────────────────────────────────────
+// ── Page content router ────────────────────────────────────────────────────
 
 function PageContent({ page }: { page: number }) {
-  return page === 0 ? <ResumePage1 /> : <ResumePage2 />;
+  if (page === 0) return <CoverPage />;
+  if (page === 1) return <ResumePage1 />;
+  return <ResumePage2 />;
 }
 
-// ── Shared page card styles ────────────────────────────────────────────────
+// ── Shared card class ──────────────────────────────────────────────────────
 
-const CARD_STYLE =
-  "absolute inset-0 bg-[#FAFAF7] rounded-[3px] shadow-[0_2px_4px_rgba(0,0,0,0.12),0_8px_24px_rgba(0,0,0,0.35),0_24px_56px_rgba(0,0,0,0.5)]";
+const CARD =
+  "absolute inset-0 rounded-[3px] overflow-hidden shadow-[0_2px_4px_rgba(0,0,0,0.15),0_8px_24px_rgba(0,0,0,0.4),0_24px_56px_rgba(0,0,0,0.55)]";
+
+// ── Page label helper ──────────────────────────────────────────────────────
+
+function pageLabel(p: number) {
+  if (p === 0) return "Cover";
+  return `Page ${p} of 2`;
+}
 
 // ── Main exported component ────────────────────────────────────────────────
 
-const TOTAL_PAGES = 2;
+const TOTAL_PAGES = 3; // cover + 2 resume pages
+
+// Easing: fast start, decelerates to a gentle land — mimics physical page weight
+const FLIP_EASE = "cubic-bezier(0.55, 0.055, 0.215, 1)";
+const FLIP_DURATION = 750; // ms
 
 export default function ResumeBook() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -246,18 +338,24 @@ export default function ResumeBook() {
     setTimeout(() => {
       setCurrentPage(next);
       setPhase("idle");
-    }, 720);
+    }, FLIP_DURATION + 10);
   };
 
   const isFlipping = phase === "flipping";
   const canGoBack = currentPage > 0;
   const canGoForward = currentPage < TOTAL_PAGES - 1;
 
+  // Direction-aware shadow gradient: the turning page casts shadow from the hinge side
+  const shadowGradient =
+    flipDir === "forward"
+      ? "linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 45%, transparent 75%)"
+      : "linear-gradient(270deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 45%, transparent 75%)";
+
   return (
     <div className="flex flex-col items-center select-none">
-      {/* ── Outer layout: arrows flanking the book ── */}
       <div className="flex items-center gap-6">
-        {/* ── Left / Back arrow ── */}
+
+        {/* ── Back arrow ── */}
         <button
           onClick={() => flip("backward")}
           disabled={!canGoBack || isFlipping}
@@ -272,76 +370,78 @@ export default function ResumeBook() {
               : "opacity-20 cursor-not-allowed",
           ].join(" ")}
         >
-          <svg
-            className="w-6 h-6 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
             <path d="M15 19l-7-7 7-7" />
           </svg>
         </button>
 
-        {/* ── Book with 3-D perspective ── */}
-        <div style={{ perspective: "1000px" }}>
-          <div
-            className="relative"
-            style={{ width: "700px", minHeight: "900px" }}
-          >
-            {/*
-             * BACK LAYER — the upcoming page, revealed as the front flips away.
-             * Only rendered during a flip so it's never visible otherwise.
-             */}
+        {/* ── Book with perspective ── */}
+        {/*
+         * perspective: 900px — close enough for dramatic depth without distortion.
+         * The front layer physically rotates away; backfaceVisibility hides it at 90°,
+         * revealing the back layer (next page) underneath.
+         * Two overlay divs add:
+         *   1. A directional shadow on the back layer (cast by the turning page)
+         *   2. A darkening on the front layer as it rotates away from the viewer
+         */}
+        <div style={{ perspective: "900px" }}>
+          <div className="relative" style={{ width: "700px", minHeight: "900px" }}>
+
+            {/* ── BACK LAYER: destination page, revealed as front rotates away ── */}
             {isFlipping && (
-              <div className={CARD_STYLE}>
+              <div className={`${CARD} bg-[#FAFAF7]`} style={{ zIndex: 1 }}>
                 <PageContent page={toPage} />
+                {/* Directional shadow cast by the turning page — fades as page lands */}
+                <div
+                  className="absolute inset-0 pointer-events-none z-20 rounded-[3px]"
+                  style={{
+                    background: shadowGradient,
+                    animation: `flipShadowFade ${FLIP_DURATION}ms ease-out forwards`,
+                  }}
+                />
               </div>
             )}
 
-            {/*
-             * FRONT LAYER — the current page.
-             * During a flip it rotates away (backface hidden so it vanishes at 90°),
-             * exposing the back layer underneath.
-             */}
+            {/* ── FRONT LAYER: current page, rotates away during flip ── */}
             <div
-              className={`${CARD_STYLE} page-spine`}
+              className={`${CARD} page-spine bg-[#FAFAF7]`}
               style={{
                 zIndex: 2,
-                transformOrigin:
-                  flipDir === "forward" ? "left center" : "right center",
+                transformOrigin: flipDir === "forward" ? "left center" : "right center",
                 backfaceVisibility: "hidden",
                 WebkitBackfaceVisibility: "hidden",
                 willChange: "transform",
                 animation: isFlipping
-                  ? `${
-                      flipDir === "forward"
-                        ? "bookFlipForward"
-                        : "bookFlipBackward"
-                    } 0.72s cubic-bezier(0.645, 0.045, 0.355, 1.000) forwards`
+                  ? `${flipDir === "forward" ? "bookFlipForward" : "bookFlipBackward"} ${FLIP_DURATION}ms ${FLIP_EASE} forwards`
                   : "none",
               }}
             >
               <PageContent page={isFlipping ? fromPage : currentPage} />
 
-              {/* Corner curl hint on page 1 */}
+              {/* Darkening overlay: the page dims as it rotates away from the viewer */}
+              {isFlipping && (
+                <div
+                  className="absolute inset-0 pointer-events-none z-20 rounded-[3px] bg-black"
+                  style={{ animation: `flipPageDarken ${FLIP_DURATION / 2}ms ease-in forwards` }}
+                />
+              )}
+
+              {/* Corner curl hint */}
               {!isFlipping && currentPage < TOTAL_PAGES - 1 && (
                 <div
-                  className="absolute bottom-0 right-0 w-10 h-10 pointer-events-none"
+                  className="absolute bottom-0 right-0 w-12 h-12 pointer-events-none"
                   style={{
-                    background:
-                      "linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.07) 50%)",
+                    background: "linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.07) 50%)",
                     borderRadius: "0 0 3px 0",
                   }}
                 />
               )}
             </div>
+
           </div>
         </div>
 
-        {/* ── Right / Forward arrow ── */}
+        {/* ── Forward arrow ── */}
         <button
           onClick={() => flip("forward")}
           disabled={!canGoForward || isFlipping}
@@ -356,26 +456,19 @@ export default function ResumeBook() {
               : "opacity-20 cursor-not-allowed",
           ].join(" ")}
         >
-          <svg
-            className="w-6 h-6 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 5l7 7-7 7" />
           </svg>
         </button>
+
       </div>
 
-      {/* ── Page indicator dots ── */}
+      {/* ── Page dots ── */}
       <div className="flex items-center gap-3 mt-7">
         {Array.from({ length: TOTAL_PAGES }).map((_, i) => (
           <button
             key={i}
-            aria-label={`Go to page ${i + 1}`}
+            aria-label={`Go to ${pageLabel(i)}`}
             onClick={() => {
               if (i > currentPage) flip("forward");
               else if (i < currentPage) flip("backward");
@@ -391,7 +484,7 @@ export default function ResumeBook() {
       </div>
 
       <p className="text-slate-500 text-xs mt-2.5 tracking-widest uppercase">
-        Page {currentPage + 1} / {TOTAL_PAGES}
+        {pageLabel(currentPage)}
       </p>
     </div>
   );
