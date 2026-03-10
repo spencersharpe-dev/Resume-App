@@ -51,20 +51,14 @@ export default function Home() {
           <div className="absolute inset-0 rounded-full bg-amber-400/25 blur-2xl scale-125" />
           {/* Gold gradient ring */}
           <div className="relative w-44 h-44 rounded-full p-[3px] bg-gradient-to-br from-amber-200 via-amber-500 to-yellow-600 shadow-[0_0_40px_rgba(251,191,36,0.3)]">
-            <div className="w-full h-full rounded-full overflow-hidden bg-slate-800 flex items-end justify-center">
-              {/* Placeholder silhouette avatar */}
-              <svg
-                viewBox="0 0 176 176"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-full h-full"
-              >
-                <rect width="176" height="176" fill="#1e293b" />
-                {/* Body */}
-                <ellipse cx="88" cy="190" rx="60" ry="50" fill="#334155" />
-                {/* Head */}
-                <circle cx="88" cy="72" r="34" fill="#475569" />
-              </svg>
+            <div className="w-full h-full rounded-full overflow-hidden bg-slate-800">
+              {/* Profile photo */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/Profile-image-resume.png"
+                alt="Spencer Sharpe"
+                className="w-full h-full object-cover object-top"
+              />
             </div>
           </div>
           {/* Name badge below photo */}

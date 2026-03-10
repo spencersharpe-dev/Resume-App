@@ -4,6 +4,7 @@ import { useState } from "react";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type FlipDir = "forward" | "backward";
+type Phase = "idle" | "flipping";
 
 // ── Small helper components ────────────────────────────────────────────────
 
@@ -84,7 +85,6 @@ function ResumePage1() {
         <div className="mt-3 h-[2px] bg-gradient-to-r from-slate-800 via-slate-400 to-transparent rounded-full" />
       </div>
 
-      {/* Work Experience */}
       <SectionHeader title="Work Experience" />
 
       <JobEntry
@@ -116,7 +116,6 @@ function ResumePage1() {
         ]}
       />
 
-      {/* Page number */}
       <div className="absolute bottom-5 right-9 text-[9px] text-slate-300 tracking-widest uppercase">
         Page 1 of 2
       </div>
@@ -142,7 +141,6 @@ function ResumePage2() {
         <div className="mt-2 h-[2px] bg-gradient-to-r from-slate-800 via-slate-400 to-transparent rounded-full" />
       </div>
 
-      {/* GOAT QA Engineer */}
       <JobEntry
         company="GOAT"
         title="QA Engineer"
@@ -163,7 +161,6 @@ function ResumePage2() {
         ]}
       />
 
-      {/* Education */}
       <SectionHeader title="Education" />
       <div className="mb-4 space-y-1.5">
         <div className="flex justify-between items-center">
@@ -180,7 +177,6 @@ function ResumePage2() {
         </div>
       </div>
 
-      {/* Extended Education */}
       <SectionHeader title="Extended Education" />
       <div className="mb-4 space-y-1.5">
         <div className="flex justify-between items-center">
@@ -196,7 +192,6 @@ function ResumePage2() {
         </p>
       </div>
 
-      {/* Extra-Curricular */}
       <SectionHeader title="Extra-Curricular" />
       <div className="space-y-1.5">
         <div className="flex justify-between items-center">
@@ -209,7 +204,6 @@ function ResumePage2() {
         </div>
       </div>
 
-      {/* Page number */}
       <div className="absolute bottom-5 right-9 text-[9px] text-slate-300 tracking-widest uppercase">
         Page 2 of 2
       </div>
@@ -217,149 +211,163 @@ function ResumePage2() {
   );
 }
 
-// ── Navigation arrow button ────────────────────────────────────────────────
+// ── Page content helper ────────────────────────────────────────────────────
 
-function NavArrow({
-  direction,
-  onClick,
-  visible,
-}: {
-  direction: "left" | "right";
-  onClick: () => void;
-  visible: boolean;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      aria-label={direction === "left" ? "Previous page" : "Next page"}
-      className={[
-        "absolute top-1/2 -translate-y-1/2 z-30",
-        direction === "left" ? "-left-16" : "-right-16",
-        "w-12 h-12 rounded-full",
-        "bg-gradient-to-br from-amber-400 to-amber-600",
-        "hover:from-amber-300 hover:to-amber-500",
-        "shadow-[0_4px_20px_rgba(251,191,36,0.4)]",
-        "flex items-center justify-center",
-        "transition-all duration-300 ease-out",
-        visible
-          ? "opacity-100 scale-100"
-          : "opacity-0 scale-90 pointer-events-none",
-      ].join(" ")}
-    >
-      {direction === "left" ? (
-        <svg
-          className="w-5 h-5 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          strokeWidth={2.5}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M15 19l-7-7 7-7" />
-        </svg>
-      ) : (
-        <svg
-          className="w-5 h-5 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          strokeWidth={2.5}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M9 5l7 7-7 7" />
-        </svg>
-      )}
-    </button>
-  );
+function PageContent({ page }: { page: number }) {
+  return page === 0 ? <ResumePage1 /> : <ResumePage2 />;
 }
+
+// ── Shared page card styles ────────────────────────────────────────────────
+
+const CARD_STYLE =
+  "absolute inset-0 bg-[#FAFAF7] rounded-[3px] shadow-[0_2px_4px_rgba(0,0,0,0.12),0_8px_24px_rgba(0,0,0,0.35),0_24px_56px_rgba(0,0,0,0.5)]";
 
 // ── Main exported component ────────────────────────────────────────────────
 
 const TOTAL_PAGES = 2;
 
 export default function ResumeBook() {
-  const [page, setPage] = useState(0);
-  const [displayedPage, setDisplayedPage] = useState(0);
-  const [animClass, setAnimClass] = useState("");
-  const [flipping, setFlipping] = useState(false);
-  const [hovered, setHovered] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [phase, setPhase] = useState<Phase>("idle");
+  const [flipDir, setFlipDir] = useState<FlipDir>("forward");
+  const [fromPage, setFromPage] = useState(0);
+  const [toPage, setToPage] = useState(1);
 
   const flip = (dir: FlipDir) => {
-    if (flipping) return;
-    const next = dir === "forward" ? page + 1 : page - 1;
+    if (phase !== "idle") return;
+    const next = dir === "forward" ? currentPage + 1 : currentPage - 1;
     if (next < 0 || next >= TOTAL_PAGES) return;
 
-    setFlipping(true);
-    setAnimClass(dir === "forward" ? "flip-forward-out" : "flip-backward-out");
+    setFromPage(currentPage);
+    setToPage(next);
+    setFlipDir(dir);
+    setPhase("flipping");
 
     setTimeout(() => {
-      setDisplayedPage(next);
-      setPage(next);
-      setAnimClass(dir === "forward" ? "flip-forward-in" : "flip-backward-in");
-      setTimeout(() => {
-        setAnimClass("");
-        setFlipping(false);
-      }, 360);
-    }, 360);
+      setCurrentPage(next);
+      setPhase("idle");
+    }, 720);
   };
+
+  const isFlipping = phase === "flipping";
+  const canGoBack = currentPage > 0;
+  const canGoForward = currentPage < TOTAL_PAGES - 1;
 
   return (
     <div className="flex flex-col items-center select-none">
-      {/* Hover zone — includes side arrow areas */}
-      <div
-        className="relative px-20"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        {/* ── Left / Previous arrow ── */}
-        <NavArrow
-          direction="left"
+      {/* ── Outer layout: arrows flanking the book ── */}
+      <div className="flex items-center gap-6">
+        {/* ── Left / Back arrow ── */}
+        <button
           onClick={() => flip("backward")}
-          visible={hovered && page > 0}
-        />
-
-        {/* ── Right / Next arrow ── */}
-        <NavArrow
-          direction="right"
-          onClick={() => flip("forward")}
-          visible={hovered && page < TOTAL_PAGES - 1}
-        />
-
-        {/* ── Resume card ── */}
-        <div
+          disabled={!canGoBack || isFlipping}
+          aria-label="Previous page"
           className={[
-            "relative page-spine",
-            "bg-[#FAFAF7]",
-            "rounded-[3px]",
-            // Layered shadow for paper depth
-            "shadow-[0_2px_4px_rgba(0,0,0,0.12),0_8px_24px_rgba(0,0,0,0.35),0_24px_56px_rgba(0,0,0,0.5),4px_0_12px_rgba(0,0,0,0.08)]",
-            // Glow on hover
-            hovered && !flipping
-              ? "ring-1 ring-amber-400/20 shadow-[0_2px_4px_rgba(0,0,0,0.12),0_8px_24px_rgba(0,0,0,0.35),0_24px_56px_rgba(0,0,0,0.5),0_0_60px_rgba(251,191,36,0.08)]"
-              : "",
-            "transition-shadow duration-500",
-            animClass,
-          ]
-            .filter(Boolean)
-            .join(" ")}
-          style={{ width: "700px", minHeight: "900px" }}
+            "w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0",
+            "bg-gradient-to-br from-amber-400 to-amber-600",
+            "shadow-[0_4px_20px_rgba(251,191,36,0.4)]",
+            "transition-all duration-200",
+            canGoBack && !isFlipping
+              ? "opacity-100 hover:scale-110 hover:from-amber-300 hover:to-amber-500 cursor-pointer"
+              : "opacity-20 cursor-not-allowed",
+          ].join(" ")}
         >
-          {displayedPage === 0 ? <ResumePage1 /> : <ResumePage2 />}
+          <svg
+            className="w-6 h-6 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
 
-          {/* Page-edge curl hint (bottom-right corner fold) */}
-          {page < TOTAL_PAGES - 1 && (
+        {/* ── Book with 3-D perspective ── */}
+        <div style={{ perspective: "1000px" }}>
+          <div
+            className="relative"
+            style={{ width: "700px", minHeight: "900px" }}
+          >
+            {/*
+             * BACK LAYER — the upcoming page, revealed as the front flips away.
+             * Only rendered during a flip so it's never visible otherwise.
+             */}
+            {isFlipping && (
+              <div className={CARD_STYLE}>
+                <PageContent page={toPage} />
+              </div>
+            )}
+
+            {/*
+             * FRONT LAYER — the current page.
+             * During a flip it rotates away (backface hidden so it vanishes at 90°),
+             * exposing the back layer underneath.
+             */}
             <div
-              className="absolute bottom-0 right-0 w-10 h-10 pointer-events-none"
+              className={`${CARD_STYLE} page-spine`}
               style={{
-                background:
-                  "linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.06) 50%)",
-                borderRadius: "0 0 3px 0",
+                zIndex: 2,
+                transformOrigin:
+                  flipDir === "forward" ? "left center" : "right center",
+                backfaceVisibility: "hidden",
+                WebkitBackfaceVisibility: "hidden",
+                willChange: "transform",
+                animation: isFlipping
+                  ? `${
+                      flipDir === "forward"
+                        ? "bookFlipForward"
+                        : "bookFlipBackward"
+                    } 0.72s cubic-bezier(0.645, 0.045, 0.355, 1.000) forwards`
+                  : "none",
               }}
-            />
-          )}
+            >
+              <PageContent page={isFlipping ? fromPage : currentPage} />
+
+              {/* Corner curl hint on page 1 */}
+              {!isFlipping && currentPage < TOTAL_PAGES - 1 && (
+                <div
+                  className="absolute bottom-0 right-0 w-10 h-10 pointer-events-none"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.07) 50%)",
+                    borderRadius: "0 0 3px 0",
+                  }}
+                />
+              )}
+            </div>
+          </div>
         </div>
+
+        {/* ── Right / Forward arrow ── */}
+        <button
+          onClick={() => flip("forward")}
+          disabled={!canGoForward || isFlipping}
+          aria-label="Next page"
+          className={[
+            "w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0",
+            "bg-gradient-to-br from-amber-400 to-amber-600",
+            "shadow-[0_4px_20px_rgba(251,191,36,0.4)]",
+            "transition-all duration-200",
+            canGoForward && !isFlipping
+              ? "opacity-100 hover:scale-110 hover:from-amber-300 hover:to-amber-500 cursor-pointer"
+              : "opacity-20 cursor-not-allowed",
+          ].join(" ")}
+        >
+          <svg
+            className="w-6 h-6 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
       {/* ── Page indicator dots ── */}
@@ -369,12 +377,12 @@ export default function ResumeBook() {
             key={i}
             aria-label={`Go to page ${i + 1}`}
             onClick={() => {
-              if (i > page) flip("forward");
-              else if (i < page) flip("backward");
+              if (i > currentPage) flip("forward");
+              else if (i < currentPage) flip("backward");
             }}
             className={[
               "rounded-full transition-all duration-300",
-              i === page
+              i === currentPage
                 ? "w-6 h-2.5 bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]"
                 : "w-2.5 h-2.5 bg-slate-600 hover:bg-slate-400",
             ].join(" ")}
@@ -382,9 +390,8 @@ export default function ResumeBook() {
         ))}
       </div>
 
-      {/* ── Page counter ── */}
       <p className="text-slate-500 text-xs mt-2.5 tracking-widest uppercase">
-        Page {page + 1} / {TOTAL_PAGES}
+        Page {currentPage + 1} / {TOTAL_PAGES}
       </p>
     </div>
   );
